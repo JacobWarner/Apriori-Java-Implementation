@@ -4,9 +4,7 @@ import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.core.converters.Loader;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Main {
 
@@ -20,7 +18,9 @@ public class Main {
     private static String[] attributeNames;
     private static List<int[]> itemSetsByIndex;
     private static List<String[]> itemSetsByString;
-    private static HashMap<Integer, String> encodedAttributeNames = new HashMap<>();
+    private static List<int[]> dataEntriesWithEncodedStringIndices;
+    private static HashMap<String,Integer> stringToIntegerEncoded = new HashMap<>();
+    private static HashMap<Integer,String> integerToStringEncoded = new HashMap<>();
     private static DataSource data = null;
     private static Instances instances = null;
 
@@ -32,7 +32,13 @@ public class Main {
             return;
         }
 
-        System.out.println(instances.toSummaryString());
+        for (int i = 0; i < dataEntriesWithEncodedStringIndices.size(); i++) {
+            System.out.println(Arrays.toString(dataEntriesWithEncodedStringIndices.get(i)));
+        }
+
+        for (int j = 0; j < integerToStringEncoded.size(); j++) {
+            System.out.println("Index=" + j + " ----> " + integerToStringEncoded.get(j));
+        }
     }
 
     // ARFF File handling
@@ -67,6 +73,7 @@ public class Main {
     }
 
     private static void AprioriAlgorithm() {
+        long startTime = System.currentTimeMillis();
         // Generate of Candidates (C_k) is by joining L_{k-1} with itself
 
         // C_k: candidate itemset of size k
@@ -82,16 +89,17 @@ public class Main {
             // L_k = {c in C_k : c.count >= minSup}
             // k++;
         // return L = U_k L_k
+        long endTime = System.currentTimeMillis();
     }
 
     /**
      * Creating itemsets using their respective indices within the data
      * might be easier to code with. This is up for discussion.
      */
-    private static void createSizeOneItemSetsByIndexNumber() {
+    private static void createSizeOneItemSetsByEncodedIndexNumber() {
         itemSetsByIndex = new ArrayList<int[]>();
 
-        for (int i = 0; i < numAttributes; i++) {
+        for (int i = 0; i < integerToStringEncoded.keySet().size(); i++) {
             int[] candidate = {i};
             itemSetsByIndex.add(candidate);
         }
@@ -125,15 +133,24 @@ public class Main {
             // l_1[k-1] < l_2[k-1] to avoid duplicates
     }
 
-    private static void createEncodedAttributeNames() {
-        int i = 1;
+    private static void createEncodedAttributeNames() throws Exception {
+        dataEntriesWithEncodedStringIndices = new ArrayList<>();
 
-        for (int j = 0;  j < attributeNames.length - 1; j++) {
-            encodedAttributeNames.put(i++, attributeNames[j] + "=n");
-            encodedAttributeNames.put(i++, attributeNames[j] + "=y");
+        int k = 0;
+        for (Instance instance : data.getDataSet()) {
+            int[] encodedDataEntry = new int[numAttributes];
+            String[] split = instance.toString().split(",");
+
+            for (int i = 0; i < split.length; i++) {
+                String encodedString = attributeNames[i] + "=" + split[i];
+                if (!stringToIntegerEncoded.containsKey(encodedString)) {
+                    integerToStringEncoded.put(k, encodedString);
+                    stringToIntegerEncoded.put(encodedString, k);
+                    k++;
+                }
+                encodedDataEntry[i] = stringToIntegerEncoded.get(encodedString);
+            }
+            dataEntriesWithEncodedStringIndices.add(encodedDataEntry);
         }
-
-        encodedAttributeNames.put(i++, attributeNames[attributeNames.length-1] + "=democrat");
-        encodedAttributeNames.put(i, attributeNames[attributeNames.length-1] + "=republican");
     }
 }
