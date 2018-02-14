@@ -1,8 +1,11 @@
 package com.company;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.core.converters.Loader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Main {
@@ -17,6 +20,7 @@ public class Main {
     private static String[] attributeNames;
     private static List<int[]> itemSetsByIndex;
     private static List<String[]> itemSetsByString;
+    private static HashMap<Integer, String> encodedAttributeNames = new HashMap<>();
     private static DataSource data = null;
     private static Instances instances = null;
 
@@ -44,7 +48,6 @@ public class Main {
 
             // Number of attributes
             numAttributes = instances.numAttributes();
-
             // Number of data entries
             numInstances = instances.numInstances();
 
@@ -54,13 +57,16 @@ public class Main {
                 attributeNames[i] = instances.attribute(i).name();
             }
 
+            // Creates encoded attribute names (i.e. "Class=democrat" and "Class=republican"
+            createEncodedAttributeNames();
+
         } catch (Exception e) {
             System.out.println("Unable to convert data.");
             e.printStackTrace();
         }
     }
 
-    private void AprioriAlgorithm() {
+    private static void AprioriAlgorithm() {
         // Generate of Candidates (C_k) is by joining L_{k-1} with itself
 
         // C_k: candidate itemset of size k
@@ -82,7 +88,7 @@ public class Main {
      * Creating itemsets using their respective indices within the data
      * might be easier to code with. This is up for discussion.
      */
-    private void createSizeOneItemSetsByIndexNumber() {
+    private static void createSizeOneItemSetsByIndexNumber() {
         itemSetsByIndex = new ArrayList<int[]>();
 
         for (int i = 0; i < numAttributes; i++) {
@@ -91,7 +97,7 @@ public class Main {
         }
     }
 
-    private void createSizeOneItemSetsByString() {
+    private static void createSizeOneItemSetsByString() {
         itemSetsByString = new ArrayList<String[]>();
 
         for (int i = 0; i < numAttributes; i++) {
@@ -100,12 +106,12 @@ public class Main {
         }
     }
 
-    private void findFrequentItemSets() {
+    private static void findFrequentItemSets() {
 
     }
 
     // Use this to join L_{k-1} with itself to generate C_k
-    private void joinTwoSets() {
+    private static void joinTwoSets() {
         // Assume that items in L_{k-1} are in lexicographic order
         // Let l_1 and l_2 be two itemsets in L_{k-1}
         // They are joinable if:
@@ -117,5 +123,17 @@ public class Main {
         // Conditions for join:
             // First k-2 items are common
             // l_1[k-1] < l_2[k-1] to avoid duplicates
+    }
+
+    private static void createEncodedAttributeNames() {
+        int i = 1;
+
+        for (int j = 0;  j < attributeNames.length - 1; j++) {
+            encodedAttributeNames.put(i++, attributeNames[j] + "=n");
+            encodedAttributeNames.put(i++, attributeNames[j] + "=y");
+        }
+
+        encodedAttributeNames.put(i++, attributeNames[attributeNames.length-1] + "=democrat");
+        encodedAttributeNames.put(i, attributeNames[attributeNames.length-1] + "=republican");
     }
 }
