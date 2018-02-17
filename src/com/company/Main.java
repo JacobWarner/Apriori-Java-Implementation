@@ -3,7 +3,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.core.converters.Loader;
-
 import javax.sound.midi.SysexMessage;
 import java.util.*;
 
@@ -17,12 +16,12 @@ public class Main {
     private static int numAttributes;
     private static int numInstances;
     private static String[] attributeNames;
-    private static List<int[]> itemSetsByIndex;
-    private static List<String[]> itemSetsByString;
-    private static List<int[]> dataEntriesWithEncodedStringIndices;
+    private static ArrayList<ArrayList<Integer>> encodedInstances;
+
     private static HashMap<String,Integer> stringToIntegerEncoded = new HashMap<>();
     private static HashMap<Integer,String> integerToStringEncoded = new HashMap<>();
-    private static List <String> tupples = new ArrayList <> ();
+    private static HashMap<ArrayList<Integer>, Integer> frequentItemSets = new HashMap<>();
+
     private static DataSource data = null;
     private static Instances instances = null;
 
@@ -36,14 +35,16 @@ public class Main {
 
         AprioriAlgorithm();
 
-//        for (int i = 0; i < dataEntriesWithEncodedStringIndices.size(); i++) {
-//            System.out.println(Arrays.toString(dataEntriesWithEncodedStringIndices.get(i)));
-//        }
-//
-        System.out.println();
-        for (int j = 0; j < integerToStringEncoded.size(); j++) {
-            System.out.println("Index=" + j + " ----> " + integerToStringEncoded.get(j));
-        }
+        ArrayList<AssociationRule> rules = ruleGeneration();
+        rules.sort(new Comparator<AssociationRule>() {
+            @Override
+            public int compare(AssociationRule o1, AssociationRule o2) {
+                double confDiff = o2.getConfidence() - o1.getConfidence();
+                return ((confDiff >= 0) ? 1 : -1);
+            }
+        });
+
+        printAllRules(rules);
     }
 
     // ARFF File handling
@@ -80,75 +81,104 @@ public class Main {
 
 
     private static void AprioriAlgorithm() throws Exception {
+        System.out.println("Apriori");
+        System.out.println("=======");
+
+        int numSupportedInstances = (int)(minSup*numInstances);
+        System.out.println("\nMinimum support: " + minSup + " (" + numSupportedInstances + " instances)");
+        System.out.println("Minimum metric <confidence>: " + minConf);
+        System.out.println("\nGenerated sets of large itemsets:");
+
 
         long startTime = System.currentTimeMillis();
+        int k = 2;
 
-        /// Generate of Candidates (C_k) is by joining L_{k-1} with itself
+        ArrayList<ArrayList<Integer>> itemSetsOfSizeOne = createSizeOneItemSetsByEncodedIndexNumber();
+        ArrayList<ArrayList<Integer>> currentFrequentItemSets = createItemSetsWithSupport(itemSetsOfSizeOne);
+        // System.out.println(Arrays.toString(currentFrequentItemSets.toArray()));
+        ArrayList<ArrayList<Integer>> currentCandidateItemSets = new ArrayList<>();
 
-        // C_k: candidate itemset of size k
-        // L_k: frequent itemset of size k
-
-        // Create frequent items of size 1, L_1
-        // k =2
-        // while FrequentItemSet L_{k-1} not empty...
-        // Generate candidates from L_{k-1} with minSup
-        // for each transaction/instance (t) in database
-        // Generate subsets of t that are candidates (C_t)
-        // for each candidate c in C_t, c.count++
-        // L_k = {c in C_k : c.count >= minSup}
-        // k++;
-        // return L = U_k L_k
+        while (currentFrequentItemSets.size() > 0) {
+            printFrequentItemSets(currentFrequentItemSets.size(), (k-1));
+            currentCandidateItemSets = createCandidates(currentFrequentItemSets, k);
+            currentFrequentItemSets = createItemSetsWithSupport(currentCandidateItemSets);
+            k++;
+        }
 
         long endTime = System.currentTimeMillis();
+    }
+
+    private static ArrayList<ArrayList<Integer>> createItemSetsWithSupport(ArrayList<ArrayList<Integer>> items){
+        ArrayList<ArrayList<Integer>> itemSet = new ArrayList<>();
+        HashMap<ArrayList<Integer>, Integer> tempFrequent = new HashMap<>();
+
+        for (ArrayList<Integer> item : items) {
+            for (ArrayList<Integer> instance : encodedInstances) {
+                if (instance.containsAll(item)) {
+                    frequentItemSets.put(item, (frequentItemSets.getOrDefault(item, 0) + 1));
+
+//                    if (frequentItemSets.get(item) > 230) {
+//                        System.out.println("FrequentItemSet: " + item.toString());
+//                        System.out.println("Frequency: " + frequentItemSets.get(item));
+//                    }
+
+                    tempFrequent.put(item, (tempFrequent.getOrDefault(item, 0) + 1));
+                }
+            }
+        }
+
+        for (ArrayList<Integer> key : tempFrequent.keySet()){
+            double support = ((double)tempFrequent.get(key))/((double)numInstances);
+
+            if (support >= minSup) {
+                itemSet.add(key);
+            }
+        }
+
+        return itemSet;
+    }
+
+    private static ArrayList<ArrayList<Integer>> createCandidates(ArrayList<ArrayList<Integer>> itemSet, int k) {
+        ArrayList<ArrayList<Integer>> candidateSet = new ArrayList<>();
+
+        for (int i = 0; i < itemSet.size() - 1; i++) {
+            for (int j = i; j < itemSet.size(); j++) {
+                if (canTwoListsCombine(itemSet.get(i), itemSet.get(j), k)) {
+                    ArrayList<Integer> combinedItemSet = union(itemSet.get(i), itemSet.get(j));
+
+                    if (combinedItemSet.size() == k) {
+                        candidateSet.add(combinedItemSet);
+                    }
+                }
+            }
+        }
+
+
+        return candidateSet;
     }
 
     /**
      * Creating itemsets using their respective indices within the data
      * might be easier to code with. This is up for discussion.
      */
-    private static void createSizeOneItemSetsByEncodedIndexNumber() {
-        itemSetsByIndex = new ArrayList<int[]>();
+    private static ArrayList<ArrayList<Integer>> createSizeOneItemSetsByEncodedIndexNumber() {
+        ArrayList<ArrayList<Integer>> sizeOneItemSets = new ArrayList<ArrayList<Integer>>();
 
         for (int i = 0; i < numAttributes*2; i++) {
-            int[] candidate = {i};
-            itemSetsByIndex.add(candidate);
+            ArrayList<Integer> candidate = new ArrayList<>(1);
+            candidate.add(i);
+            sizeOneItemSets.add(candidate);
         }
-    }
 
-    private static void createSizeOneItemSetsByString() {
-        itemSetsByString = new ArrayList<String[]>();
-
-        for (int i = 0; i < numAttributes; i++) {
-            String[] candidate = {attributeNames[i]};
-            itemSetsByString.add(candidate);
-        }
-    }
-
-    private static void findFrequentItemSets() {
-
-    }
-
-    // Use this to join L_{k-1} with itself to generate C_k
-    private static void joinTwoSets() {
-        // Assume that items in L_{k-1} are in lexicographic order
-        // Let l_1 and l_2 be two itemsets in L_{k-1}
-        // They are joinable if:
-            // Their first k-2 items match
-        // The result of the join is the set of
-            // First k-2 items (common to both sets)
-            // Last elements of l_1 and l_2
-
-        // Conditions for join:
-            // First k-2 items are common
-            // l_1[k-1] < l_2[k-1] to avoid duplicates
+        return sizeOneItemSets;
     }
 
     private static void createEncodedAttributeNames() throws Exception {
-        dataEntriesWithEncodedStringIndices = new ArrayList<>();
+        encodedInstances = new ArrayList<>();
 
         int k = 0;
         for (Instance instance : data.getDataSet()) {
-            int[] encodedDataEntry = new int[numAttributes];
+            ArrayList<Integer> encodedDataEntry = new ArrayList<>(numAttributes);
             String[] split = instance.toString().split(",");
 
             for (int i = 0; i < split.length; i++) {
@@ -158,9 +188,132 @@ public class Main {
                     stringToIntegerEncoded.put(encodedString, k);
                     k++;
                 }
-                encodedDataEntry[i] = stringToIntegerEncoded.get(encodedString);
+                encodedDataEntry.add(i, stringToIntegerEncoded.get(encodedString));
             }
-            dataEntriesWithEncodedStringIndices.add(encodedDataEntry);
+            encodedInstances.add(encodedDataEntry);
         }
+    }
+
+    private static boolean canTwoListsCombine(ArrayList<Integer> list1, ArrayList<Integer> list2, int k) {
+       boolean canTheyCombine = true;
+
+       if (list1.size() != list2.size() || list1.get(k-2) >= list2.get(k-2)) {
+           return false;
+       }
+
+       for (int i = 0; i < k-2; i++) {
+           if (list1.get(i) != list2.get(i)) {
+               canTheyCombine = false;
+           }
+       }
+
+       return canTheyCombine;
+    }
+
+    private static <T> ArrayList<T> union(ArrayList<T> list1, ArrayList<T> list2) {
+        Set<T> set = new HashSet<T>();
+
+        set.addAll(list1);
+        set.addAll(list2);
+
+        return new ArrayList<T>(set);
+    }
+
+    private static ArrayList<AssociationRule> ruleGeneration() {
+        ArrayList<AssociationRule> rules = new ArrayList<>();
+        for (ArrayList<Integer> item : frequentItemSets.keySet()) {
+            Set<Integer> set = new HashSet<>(item);
+
+            for (Set<Integer> s : powerSet(set)) {
+                if (s.isEmpty()) continue;
+                Set<Integer> implied = new HashSet<>(item);
+                implied.removeAll(s);
+
+                if (implied.size() > 0) {
+
+                    ArrayList<Integer> premise = new ArrayList<>(s);
+
+                    int premiseCount = frequentItemSets.get(premise);
+                    int impliedCount = frequentItemSets.get(item);
+
+                    double itemSupport = ((double)impliedCount / numInstances);
+                    double subsetSupport = ((double)premiseCount / numInstances);
+
+                    double confidence = (itemSupport / subsetSupport);
+
+                    if (confidence >= minConf) {
+                        ArrayList<Integer> implication = new ArrayList<>(implied);
+                        AssociationRule newRule = new AssociationRule(premise, premiseCount, implication, impliedCount, confidence);
+                        if (!rules.contains(newRule)) {
+                            rules.add(newRule);
+                        }
+                    }
+                }
+            }
+        }
+
+        return rules;
+    }
+
+    // This generates the empty set, but we don't use it later on
+    private static <T> Set<Set<T>> powerSet(Set<T> originalSet) {
+        Set<Set<T>> sets = new HashSet<Set<T>>();
+        if (originalSet.isEmpty()) {
+            sets.add(new HashSet<T>());
+            return sets;
+        }
+
+        List<T> list = new ArrayList<T>(originalSet);
+        T head = list.get(0);
+        Set<T> rest = new HashSet<T>(list.subList(1, list.size()));
+        for (Set<T> set : powerSet(rest)) {
+            Set<T> newSet = new HashSet<T>();
+            newSet.add(head);
+            newSet.addAll(set);
+            sets.add(newSet);
+            sets.add(set);
+        }
+
+        return sets;
+    }
+
+    private static String ruleToString(AssociationRule rule) {
+        StringBuilder sb = new StringBuilder();
+
+        ArrayList<Integer> leftSide = rule.getPremise();
+        for (Integer i : leftSide) {
+            String association = integerToStringEncoded.get(i) + " ";
+            sb.append(association);
+        }
+
+        sb.append(rule.getPremiseCount());
+        sb.append(" ==> ");
+
+        ArrayList<Integer> rightSide = rule.getImplication();
+        for (Integer i : rightSide) {
+            String association = integerToStringEncoded.get(i) + " ";
+            sb.append(association);
+        }
+
+        sb.append(rule.getImplicationCount());
+        sb.append("    <conf:(");
+        sb.append(rule.getRoundedConfidence());
+        sb.append(")>");
+
+        return sb.toString();
+    }
+
+    private static void printAllRules(ArrayList<AssociationRule> rules) {
+        System.out.print("\nBest rules found:\n\n");
+
+        int ruleNum = 1;
+        for (AssociationRule rule : rules) {
+            System.out.println("\t" + ruleNum + ". " + ruleToString(rule));
+            ruleNum++;
+        }
+    }
+
+    private static void printFrequentItemSets(int frequentItemNum, int k) {
+        System.out.println("\nSize of set of large itemsets L(" + k + "): " + frequentItemNum);
     }
 }
