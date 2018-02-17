@@ -2,8 +2,6 @@ package com.company;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
-import weka.core.converters.Loader;
-import javax.sound.midi.SysexMessage;
 import java.util.*;
 
 public class Main {
@@ -89,13 +87,11 @@ public class Main {
         System.out.println("Minimum metric <confidence>: " + minConf);
         System.out.println("\nGenerated sets of large itemsets:");
 
-
         long startTime = System.currentTimeMillis();
-        int k = 2;
 
+        int k = 2;
         ArrayList<ArrayList<Integer>> itemSetsOfSizeOne = createSizeOneItemSetsByEncodedIndexNumber();
         ArrayList<ArrayList<Integer>> currentFrequentItemSets = createItemSetsWithSupport(itemSetsOfSizeOne);
-        // System.out.println(Arrays.toString(currentFrequentItemSets.toArray()));
         ArrayList<ArrayList<Integer>> currentCandidateItemSets = new ArrayList<>();
 
         while (currentFrequentItemSets.size() > 0) {
@@ -116,12 +112,6 @@ public class Main {
             for (ArrayList<Integer> instance : encodedInstances) {
                 if (instance.containsAll(item)) {
                     frequentItemSets.put(item, (frequentItemSets.getOrDefault(item, 0) + 1));
-
-//                    if (frequentItemSets.get(item) > 230) {
-//                        System.out.println("FrequentItemSet: " + item.toString());
-//                        System.out.println("Frequency: " + frequentItemSets.get(item));
-//                    }
-
                     tempFrequent.put(item, (tempFrequent.getOrDefault(item, 0) + 1));
                 }
             }
@@ -152,7 +142,6 @@ public class Main {
                 }
             }
         }
-
 
         return candidateSet;
     }
@@ -202,7 +191,7 @@ public class Main {
        }
 
        for (int i = 0; i < k-2; i++) {
-           if (list1.get(i) != list2.get(i)) {
+           if (!list1.get(i).equals(list2.get(i))) {
                canTheyCombine = false;
            }
        }
