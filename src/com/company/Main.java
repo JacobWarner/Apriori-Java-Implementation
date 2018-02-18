@@ -31,9 +31,11 @@ public class Main {
             return;
         }
 
+        long startTime = System.currentTimeMillis();
         AprioriAlgorithm();
-
         ArrayList<AssociationRule> rules = ruleGeneration();
+        long endTime = System.currentTimeMillis();
+
         rules.sort(new Comparator<AssociationRule>() {
             @Override
             public int compare(AssociationRule o1, AssociationRule o2) {
@@ -43,6 +45,7 @@ public class Main {
         });
 
         printAllRules(rules);
+        System.out.println("\nAmount of time taken in milliseconds: " + (endTime-startTime));
     }
 
     // ARFF File handling
@@ -77,7 +80,6 @@ public class Main {
         }
     }
 
-
     private static void AprioriAlgorithm() throws Exception {
         System.out.println("Apriori");
         System.out.println("=======");
@@ -87,7 +89,7 @@ public class Main {
         System.out.println("Minimum metric <confidence>: " + minConf);
         System.out.println("\nGenerated sets of large itemsets:");
 
-        long startTime = System.currentTimeMillis();
+
 
         int k = 2;
         ArrayList<ArrayList<Integer>> itemSetsOfSizeOne = createSizeOneItemSetsByEncodedIndexNumber();
@@ -100,8 +102,6 @@ public class Main {
             currentFrequentItemSets = createItemSetsWithSupport(currentCandidateItemSets);
             k++;
         }
-
-        long endTime = System.currentTimeMillis();
     }
 
     private static ArrayList<ArrayList<Integer>> createItemSetsWithSupport(ArrayList<ArrayList<Integer>> items){
@@ -151,9 +151,10 @@ public class Main {
      * might be easier to code with. This is up for discussion.
      */
     private static ArrayList<ArrayList<Integer>> createSizeOneItemSetsByEncodedIndexNumber() {
-        ArrayList<ArrayList<Integer>> sizeOneItemSets = new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<Integer>> sizeOneItemSets = new ArrayList<>();
 
-        for (int i = 0; i < numAttributes*2; i++) {
+        int numEncodedAttributes = stringToIntegerEncoded.keySet().size();
+        for (int i = 0; i < numEncodedAttributes; i++) {
             ArrayList<Integer> candidate = new ArrayList<>(1);
             candidate.add(i);
             sizeOneItemSets.add(candidate);
