@@ -1,55 +1,131 @@
+/**
+ * APRIORI ALGORITHM - JAVA IMPLEMENTATION
+ *
+ * AUTHOR: Jacob Warner
+ *
+ * @se <a href="https://github.com/JacobWarner/Apriori-Java-Implementation">GitHub Repository</a>
+ */
+
 package com.company;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
+
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Main {
 
-    // Hard coding stuff for now
+    // Parameters set with default values that can be overwritten through command line arguments
     private static double minSup = 0.55;
     private static double minConf = 0.9;
-    private static String filePath = "vote.arff";
+    private static int numRulesToPrint = 10;
+    private static String inputFilePath = "vote.arff";
+    private static String outputFilePath = "result.txt";
+    private static String testRunTime = "n";
 
+    // Data gathered from input file
     private static int numAttributes;
     private static int numInstances;
     private static String[] attributeNames;
     private static ArrayList<ArrayList<Integer>> encodedInstances;
-
     private static HashMap<String,Integer> stringToIntegerEncoded = new HashMap<>();
     private static HashMap<Integer,String> integerToStringEncoded = new HashMap<>();
-
     private static DataSource data = null;
     private static Instances instances = null;
 
+    private static BufferedWriter writer = null;
+
     public static void main(String[] args) throws Exception {
-        grabData(filePath);
+
+        // Handling input arguments
+        for (int i = 0; i < args.length; i++) {
+            switch(i){
+                case 0:
+                    inputFilePath = args[0];
+                    break;
+                case 1:
+                    minSup = Double.parseDouble(args[1]);
+                    if (minSup < 0.0 || minSup > 1.0) {
+                        System.out.println("Invalid minimum support. Using default of 0.55");
+                        minSup = 0.55;
+                    }
+                    break;
+                case 2:
+                    minConf = Double.parseDouble(args[2]);
+                    if (minConf < 0.0 || minConf > 1.0) {
+                        System.out.println("Invalid minimum confidence. Using default of 0.9");
+                        minConf = 0.9;
+                    }
+                    break;
+                case 3:
+                    outputFilePath = args[3];
+                    break;
+                case 4:
+                    numRulesToPrint = Integer.parseInt(args[4]);
+                    if (numRulesToPrint < 0) {
+                        System.out.println("Invalid number of rules to print. Using default of 10");
+                    }
+                case 5:
+                    testRunTime = args[5];
+                    if (!testRunTime.equalsIgnoreCase("y") || !testRunTime.equalsIgnoreCase("n")) {
+                        System.out.println("Invalid input for runtime testing. Using default answer (n).");
+                    }
+                    break;
+            }
+        }
+
+        grabData(inputFilePath);
 
         if (data == null || instances == null) {
-            System.out.println("Error gathering data from given file.");
+            System.out.println("Error gathering data from given file. Exiting.");
             return;
         }
 
-        ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets = AprioriAlgorithm();
-        ArrayList<AssociationRule> rules = ruleGeneration(frequentItemSets);
+        writer = new BufferedWriter(new FileWriter(outputFilePath, true));
+        writer.append("");
+        writer.newLine();
 
-        rules.sort(new Comparator<AssociationRule>() {
-            @Override
-            public int compare(AssociationRule o1, AssociationRule o2) {
-                double confDiff = o2.getConfidence() - o1.getConfidence();
-                return ((confDiff > 0) ? 1 : (confDiff < 0) ? -1 : 0);
+        try {
+            ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets = AprioriAlgorithm();
+            ArrayList<AssociationRule> rules = ruleGeneration(frequentItemSets);
+
+            rules.sort(new Comparator<AssociationRule>() {
+                @Override
+                public int compare(AssociationRule o1, AssociationRule o2) {
+                    double confDiff = o2.getConfidence() - o1.getConfidence();
+                    return ((confDiff > 0) ? 1 : (confDiff < 0) ? -1 : 0);
+                }
+            });
+
+            printAllRules(rules);
+
+            if (testRunTime.equalsIgnoreCase("y")) {
+                writer.newLine();
+                writer.append("End of program. Now testing runtime with different supports, 0.1 to 1.0");
+                writer.newLine();
+                testRuntimeOfProgram();
             }
-        });
+        } finally {
+            writer.newLine();
+            writer.append("");
+            if (writer != null) {
+                writer.close();
+            }
 
-        printAllRules(rules);
-
-        System.out.println("End of program. Now testing runtime with different supports, 0.1 to 1.0, and a fixed confidence of 0.9\n");
-
-        // testRuntimeOfProgram();
+            System.out.println("Program complete.");
+            System.out.println("Output file: " + outputFilePath);
+        }
     }
 
-    // ARFF File handling
+
+    /**
+     * Given a file path, it'll attempt to grab the necessary data from it.
+     * {@link DataSource} allows the reading of files other than ARFF, but it must be appropriately formatted
+     *
+     * @param fileName - the file path of the data you want to read
+     */
     private static void grabData(String fileName) {
         try {
             data = new DataSource(fileName);
@@ -76,19 +152,39 @@ public class Main {
             createSizeOneItemSetsByEncodedIndexNumber();
 
         } catch (Exception e) {
-            System.out.println("Unable to convert data.");
-            e.printStackTrace();
+            System.out.println("Unable to convert data from file. Exiting.");
+            System.out.println(e.getLocalizedMessage());
         }
     }
 
-    private static ConcurrentHashMap<ArrayList<Integer>, Integer> AprioriAlgorithm() throws Exception {
-        System.out.println("Apriori");
-        System.out.println("=======");
+
+    /**
+     * Apriori Algorithm
+     *
+     * @return (Key,Value) pairs of frequent itemsets and their respective frequencies in the data
+     * @throws IOException - throws IOException if {@link BufferedWriter} isn't functional
+     */
+    private static ConcurrentHashMap<ArrayList<Integer>, Integer> AprioriAlgorithm() throws IOException {
+        writer.append("=======");
+        writer.newLine();
+        writer.append("Apriori");
+        writer.newLine();
+        writer.append("=======");
+        writer.newLine();
 
         int numSupportedInstances = (int)(minSup*numInstances);
-        System.out.println("\nMinimum support: " + minSup + " (" + numSupportedInstances + " instances)");
-        System.out.println("Minimum metric <confidence>: " + minConf);
-        System.out.println("\nGenerated sets of large itemsets:");
+
+        writer.newLine();
+        writer.append("Input file: ").append(inputFilePath);
+        writer.newLine();
+        writer.append("Minimum support: ").append(String.valueOf(minSup)).append(" (").append(String.valueOf(numSupportedInstances)).append(" instances)");
+        writer.newLine();
+        writer.append("Minimum metric <confidence>: ").append(String.valueOf(minConf));
+        writer.newLine();
+        writer.append("Generated sets of large itemsets:");
+
+
+        // ALGORITHM HERE
 
         int k = 2;
         ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets = new ConcurrentHashMap<>();
@@ -106,6 +202,14 @@ public class Main {
         return frequentItemSets;
     }
 
+
+    /**
+     * Creates itemsets with given minimum support
+     *
+     * @param items - sets of itemsets
+     * @param frequentItemSets - frequent itemsets and their respective frequencies within the data
+     * @return
+     */
     private static ArrayList<ArrayList<Integer>> createItemSetsWithSupport(ArrayList<ArrayList<Integer>> items, ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets){
         ArrayList<ArrayList<Integer>> itemSet = new ArrayList<>();
         HashMap<ArrayList<Integer>, Integer> tempFrequent = new HashMap<>();
@@ -130,6 +234,14 @@ public class Main {
         return itemSet;
     }
 
+
+    /**
+     * Creating candidates from the current frequent itemsets
+     *
+     * @param itemSet - sets of current frequent itemsets
+     * @param k - num of items within the generated candidates itemsets
+     * @return sets of candidate itemsets
+     */
     private static ArrayList<ArrayList<Integer>> createCandidates(ArrayList<ArrayList<Integer>> itemSet, int k) {
         ArrayList<ArrayList<Integer>> candidateSet = new ArrayList<>();
 
@@ -148,9 +260,11 @@ public class Main {
         return candidateSet;
     }
 
+
     /**
-     * Creating itemsets using their respective indices within the data
-     * might be easier to code with. This is up for discussion.
+     * Creating itemsets using their respective indices within the encoded data
+     *
+     * @return sets of 1-itemsets [ a set for each attribute and their labels (i.e. y/n) ]
      */
     private static ArrayList<ArrayList<Integer>> createSizeOneItemSetsByEncodedIndexNumber() {
         ArrayList<ArrayList<Integer>> sizeOneItemSets = new ArrayList<>();
@@ -165,6 +279,12 @@ public class Main {
         return sizeOneItemSets;
     }
 
+
+    /**
+     * Encodes the attribute names for easier manipulation later. Follows the same format as Weka.
+     *
+     * @throws Exception - throws an Exception if {@link DataSource} isn't functional
+     */
     private static void createEncodedAttributeNames() throws Exception {
         encodedInstances = new ArrayList<>();
 
@@ -186,6 +306,16 @@ public class Main {
         }
     }
 
+
+    /**
+     * Checks to see if two itemsets can form a union.
+     * It's necessary for creating candidate itemsets.
+     *
+     * @param list1 - an itemset of size k-1
+     * @param list2 - another itemset of size k-1
+     * @param k - the size of the combined itemset
+     * @return true if they can combine, false otherwise
+     */
     private static boolean canTwoListsCombine(ArrayList<Integer> list1, ArrayList<Integer> list2, int k) {
        boolean canTheyCombine = true;
 
@@ -202,6 +332,15 @@ public class Main {
        return canTheyCombine;
     }
 
+
+    /**
+     * Creates a union between two {@link ArrayList}
+     *
+     * @param list1 - an array list
+     * @param list2 - another array list
+     * @param <T> - type for array list
+     * @return - the array list create by the union of list1 and list2
+     */
     private static <T> ArrayList<T> union(ArrayList<T> list1, ArrayList<T> list2) {
         Set<T> set = new HashSet<T>();
 
@@ -211,6 +350,13 @@ public class Main {
         return new ArrayList<T>(set);
     }
 
+
+    /**
+     * Generates the rules given frequent itemsets
+     *
+     * @param frequentItemSets - frequent itemsets with their respective frequencies within the data
+     * @return a list of {@link AssociationRule}s, which contain the premise, implication, their individual frequencies, and the confidence of the rule
+     */
     private static ArrayList<AssociationRule> ruleGeneration(ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets) {
         ArrayList<AssociationRule> rules = new ArrayList<>();
         for (ArrayList<Integer> item : frequentItemSets.keySet()) {
@@ -256,7 +402,15 @@ public class Main {
         return rules;
     }
 
-    // This generates the empty set, but we don't use it later on
+
+    /**
+     * Generates the powerset of a set.
+     * NOTE: It generates an empty set, but we check against that in the method, ruleGeneration
+     *
+     * @param originalSet - the original set
+     * @param <T> - the set's type
+     * @return - a set of sets (the powerset of the original set)
+     */
     private static <T> Set<Set<T>> powerSet(Set<T> originalSet) {
         Set<Set<T>> sets = new HashSet<Set<T>>();
         if (originalSet.isEmpty()) {
@@ -278,6 +432,13 @@ public class Main {
         return sets;
     }
 
+
+    /**
+     * Used to format the rules as Weka does
+     *
+     * @param rule - an {@link AssociationRule}
+     * @return - the given rule formatted into a String
+     */
     private static String ruleToString(AssociationRule rule) {
         StringBuilder sb = new StringBuilder();
 
@@ -304,28 +465,48 @@ public class Main {
         return sb.toString();
     }
 
-    private static void printAllRules(ArrayList<AssociationRule> rules) {
-        System.out.print("\nBest rules found:\n\n");
+
+    /**
+     * Prints all rules just as Weka does
+     *
+     * @param rules - a list of {@link AssociationRule}s
+     * @throws IOException - throws an IOException if {@link BufferedWriter} isn't functional
+     */
+    private static void printAllRules(ArrayList<AssociationRule> rules) throws IOException {
+        writer.newLine();
+        writer.append("Best rules found:");
+        writer.newLine();
 
         int ruleNum = 1;
         for (AssociationRule rule : rules) {
-            System.out.println("\t" + ruleNum + ". " + ruleToString(rule));
+            writer.newLine();
+            writer.append("\t").append(String.valueOf(ruleNum)).append(". ").append(ruleToString(rule));
             ruleNum++;
+            if (ruleNum > numRulesToPrint) break;
         }
     }
 
-    private static void printFrequentItemSets(int frequentItemNum, int k) {
-        System.out.println("\nSize of set of large itemsets L(" + k + "): " + frequentItemNum);
+
+    /**
+     * Prints frequent itemsets as Weka does
+     *
+     * @param frequentItemNum - number of frequent itemsets of k-size
+     * @param k - the size of the frequent itemsets
+     * @throws IOException - throws an IOException if {@link BufferedWriter} isn't functional
+     */
+    private static void printFrequentItemSets(int frequentItemNum, int k) throws IOException {
+        writer.newLine();
+        writer.append("Size of set of large itemsets L(").append(String.valueOf(k)).append("): ").append(String.valueOf(frequentItemNum));
     }
 
+
+    /**
+     * Tests the runtime of the Apriori Algorithm with support 0.1 through 1.0 (incrementing by 0.1)
+     * NOTE: Does not include runtime of rule generation, as it was not necessary.
+     *
+     * @throws Exception - throws Exception if {@link BufferedWriter} or {@link DataSource} are not functional
+     */
     private static void testRuntimeOfProgram() throws Exception {
-        grabData(filePath);
-
-        if (data == null || instances == null) {
-            System.out.println("Error gathering data from given file.");
-            return;
-        }
-
         HashMap<Double, Double> algorithmRunTime = new HashMap<>();
         double maxSupport = 1.0;
         double minSupport = 0.1;
@@ -343,13 +524,30 @@ public class Main {
             minSupport += 0.1;
         }
 
+        writer.newLine();
+        writer.append("==================");
+        writer.newLine();
+        writer.append("RUNTIME RESULTS");
+        writer.newLine();
+        writer.append("==================");
+        writer.newLine();
+
+        String temp = "";
         for (double sup = 0.1; sup <= maxSupport;) {
-            System.out.printf("Minimum support: %.1f\n", sup);
-            System.out.printf("\t Apriori Algorithm: %.6f seconds\n", algorithmRunTime.get(sup));
+            temp = String.format("Minimum support: %.1f\n", sup);
+            writer.append(temp);
+            temp = String.format("\t Apriori Algorithm: %.6f seconds\n", algorithmRunTime.get(sup));
+            writer.append(temp);
             sup = sup + 0.1;
         }
     }
 
+
+    /**
+     * Apriori Algorithm used for testing (does not print to a text file)
+     *
+     * @throws Exception - throws Exception if {@link DataSource} is not functional
+     */
     private static void AprioriAlgorithmWithoutPrint() throws Exception {
         ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets = new ConcurrentHashMap<>();
 

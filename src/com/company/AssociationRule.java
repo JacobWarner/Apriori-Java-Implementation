@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 
 /**
- * Created by Jacob on 2/17/2018.
+ * Created by Jacob Warner on 2/17/2018.
  */
 public class AssociationRule {
     private ArrayList<Integer> premise;
@@ -14,6 +14,15 @@ public class AssociationRule {
     private int implicationCount;
     private double confidence;
 
+    /**
+     * An Association Rule generated as part of the Apriori Algorithm
+     *
+     * @param premise - the itemset on the left of the rule (premise)
+     * @param premiseCount - the premise itemset's frequency within the given data
+     * @param implication - the itemset on the right of the rule (implied)
+     * @param implicationCount - the implied itemset's frequency within the given data
+     * @param confidence - the confidence of the rule
+     */
     public AssociationRule(ArrayList<Integer> premise, int premiseCount,
                            ArrayList<Integer> implication, int implicationCount,
                            double confidence) {
