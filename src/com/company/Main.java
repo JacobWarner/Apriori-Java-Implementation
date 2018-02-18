@@ -7,12 +7,26 @@
  */
 
 package com.company;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.StandardTickUnitSource;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.Range;
+import org.jfree.data.category.DefaultCategoryDataset;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
+import java.awt.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Main {
@@ -23,7 +37,7 @@ public class Main {
     private static int numRulesToPrint = 10;
     private static String inputFilePath = "vote.arff";
     private static String outputFilePath = "result.txt";
-    private static String testRunTime = "n";
+    private static String testRunTime = "y";
 
     // Data gathered from input file
     private static int numAttributes;
@@ -508,6 +522,8 @@ public class Main {
      */
     private static void testRuntimeOfProgram() throws Exception {
         HashMap<Double, Double> algorithmRunTime = new HashMap<>();
+        HashMap<Double, Integer> numRulesGeneratedPerSupport = new HashMap<>();
+
         double maxSupport = 1.0;
         double minSupport = 0.1;
         long startTime = 0;
@@ -517,7 +533,9 @@ public class Main {
         while (minSupport <= maxSupport) {
             minSup = minSupport;
             startTime = System.nanoTime();
-            AprioriAlgorithmWithoutPrint();
+            ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets = AprioriAlgorithmWithoutPrint();
+            ArrayList<AssociationRule> rules = ruleGeneration(frequentItemSets);
+            numRulesGeneratedPerSupport.put(minSupport, rules.size());
             endTime = System.nanoTime();
             timeInSeconds = ((double) (endTime-startTime)) / 1E9;
             algorithmRunTime.put(minSup, timeInSeconds);
@@ -534,12 +552,18 @@ public class Main {
 
         String temp = "";
         for (double sup = 0.1; sup <= maxSupport;) {
+            writer.newLine();
             temp = String.format("Minimum support: %.1f\n", sup);
             writer.append(temp);
+            writer.newLine();
             temp = String.format("\t Apriori Algorithm: %.6f seconds\n", algorithmRunTime.get(sup));
             writer.append(temp);
+            writer.newLine();
             sup = sup + 0.1;
         }
+
+        createRuntimeChart(algorithmRunTime);
+        createRulesPerSupportChart(numRulesGeneratedPerSupport);
     }
 
 
@@ -548,7 +572,7 @@ public class Main {
      *
      * @throws Exception - throws Exception if {@link DataSource} is not functional
      */
-    private static void AprioriAlgorithmWithoutPrint() throws Exception {
+    private static ConcurrentHashMap<ArrayList<Integer>, Integer> AprioriAlgorithmWithoutPrint() throws Exception {
         ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets = new ConcurrentHashMap<>();
 
         int k = 2;
@@ -561,5 +585,58 @@ public class Main {
             currentFrequentItemSets = createItemSetsWithSupport(currentCandidateItemSets, frequentItemSets);
             k++;
         }
+
+        return frequentItemSets;
+    }
+
+    private static void createRuntimeChart(HashMap<Double, Double> algorithmRunTime) throws IOException {
+        DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+
+        for (double sup = 0.1; sup <= 1.0;) {
+            line_chart_dataset.addValue(algorithmRunTime.get(sup), "Time", String.format("%.2f", sup));
+            sup = sup + 0.1;
+        }
+
+        JFreeChart lineChartObject = ChartFactory.createLineChart(
+                "Apriori Algorithm Analysis","Support",
+                "Runtime (seconds)",
+                line_chart_dataset, PlotOrientation.VERTICAL,
+                false,false,false);
+
+        CategoryPlot plot = lineChartObject.getCategoryPlot();
+        NumberAxis range = (NumberAxis)plot.getRangeAxis();
+        range.setRange(new Range(0.0, 3.0));
+        range.setTickUnit(new NumberTickUnit(0.2));
+
+        BasicStroke result = null;
+        lineChartObject.setBorderStroke(new BasicStroke(0.5f));
+
+        int width = 960;    /* Width of the image */
+        int height = 720;   /* Height of the image */
+        File lineChart = new File( "RuntimeLineChart.jpeg" );
+        ChartUtilities.saveChartAsJPEG(lineChart ,lineChartObject, width ,height);
+    }
+
+    private static void createRulesPerSupportChart(HashMap<Double, Integer> numRulesGeneratedPerSupport) throws IOException {
+        DefaultCategoryDataset lineChartData = new DefaultCategoryDataset();
+
+        for (double sup = 0.1; sup <= 1.0;) {
+            lineChartData.addValue(numRulesGeneratedPerSupport.get(sup), "Rules", String.format("%.2f", sup));
+            sup = sup + 0.1;
+        }
+
+        JFreeChart lineChartObject = ChartFactory.createLineChart(
+                "Apriori Algorithm Analysis","Support",
+                "Rules Generated",
+                lineChartData, PlotOrientation.VERTICAL,
+                false,false,false);
+
+        BasicStroke result = null;
+        lineChartObject.setBorderStroke(new BasicStroke(0.5f));
+
+        int width = 960;    /* Width of the image */
+        int height = 720;   /* Height of the image */
+        File lineChart = new File( "RulesPerSupportLineChart.jpeg" );
+        ChartUtilities.saveChartAsJPEG(lineChart ,lineChartObject, width ,height);
     }
 }

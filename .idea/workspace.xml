@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e1025daf-f7bb-43c1-9605-9740688707d8" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/company/AssociationRule.java" afterPath="$PROJECT_DIR$/src/com/company/AssociationRule.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/Main$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/Main.class" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/AssociationRule.class" afterPath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/AssociationRule.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Apriori-Java-Implementation.iml" afterPath="$PROJECT_DIR$/Apriori-Java-Implementation.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/result.txt" afterPath="$PROJECT_DIR$/result.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/company/Main.java" afterPath="$PROJECT_DIR$/src/com/company/Main.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -19,12 +24,33 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="13" column="17" lean-forward="true" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
+            <state relative-caret-position="784">
+              <caret line="616" column="82" lean-forward="true" selection-start-line="616" selection-start-column="82" selection-end-line="616" selection-end-column="82" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <element signature="e#15799#15807#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#16334#16342#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DefaultCategoryDataset.class" pinned="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/jfreechart-1.0.19.jar!/org/jfree/data/category/DefaultCategoryDataset.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="430">
+              <caret line="60" column="16" lean-forward="false" selection-start-line="60" selection-start-column="16" selection-end-line="60" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ChartFactory.class" pinned="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/jfreechart-1.0.19.jar!/org/jfree/chart/ChartFactory.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="492">
+              <caret line="597" column="22" lean-forward="true" selection-start-line="597" selection-start-column="22" selection-end-line="597" selection-end-column="22" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -33,7 +59,7 @@
         <entry file="file://$PROJECT_DIR$/src/com/company/AssociationRule.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="411">
-              <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+              <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -74,8 +100,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/com/company/Main.java" />
         <option value="$PROJECT_DIR$/src/com/company/AssociationRule.java" />
+        <option value="$PROJECT_DIR$/src/com/company/AprioriRuntimeChart.java" />
+        <option value="$PROJECT_DIR$/src/com/company/Main.java" />
       </list>
     </option>
   </component>
@@ -147,8 +174,9 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/jcommon-1.0.23.jar!/" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -605,12 +633,12 @@
       <workItem from="1518571631977" duration="10245000" />
       <workItem from="1518893166158" duration="18787000" />
       <workItem from="1518918338952" duration="3128000" />
-      <workItem from="1518979839027" duration="10245000" />
+      <workItem from="1518979839027" duration="14624000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48991000" />
+    <option name="totallyTimeSpent" value="53370000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="-11" width="3036" height="1822" extended-state="6" />
@@ -668,7 +696,8 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#15799#15807#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#16334#16342#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -689,7 +718,8 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#15799#15807#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#16334#16342#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -710,7 +740,8 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#15799#15807#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#16334#16342#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -721,7 +752,8 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#15799#15807#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#16334#16342#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -732,7 +764,8 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#15799#15807#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#16334#16342#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -763,20 +796,61 @@
     <entry file="file://$PROJECT_DIR$/src/com/company/AssociationRule.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="411">
-          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/javafx-src.zip!/javafx/application/Application.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="430">
+          <caret line="222" column="23" lean-forward="false" selection-start-line="222" selection-start-column="23" selection-end-line="222" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/company/AprioriRuntimeChart.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="870">
+          <caret line="29" column="4" lean-forward="false" selection-start-line="29" selection-start-column="4" selection-end-line="29" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/javafx-src.zip!/javafx/scene/chart/Axis.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="870">
+          <caret line="93" column="45" lean-forward="true" selection-start-line="93" selection-start-column="45" selection-end-line="93" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/jfreechart-1.0.19.jar!/org/jfree/chart/ChartFactory.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="492">
+          <caret line="597" column="22" lean-forward="true" selection-start-line="597" selection-start-column="22" selection-end-line="597" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/jfreechart-1.0.19.jar!/org/jfree/data/category/DefaultCategoryDataset.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="430">
+          <caret line="60" column="16" lean-forward="false" selection-start-line="60" selection-start-column="16" selection-end-line="60" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="13" column="17" lean-forward="true" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
+        <state relative-caret-position="784">
+          <caret line="616" column="82" lean-forward="true" selection-start-line="616" selection-start-column="82" selection-end-line="616" selection-end-column="82" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#15799#15807#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#16334#16342#0" expanded="true" />
           </folding>
         </state>
       </provider>
