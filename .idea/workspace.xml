@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e1025daf-f7bb-43c1-9605-9740688707d8" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/Main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/Main.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/AssociationRule.class" afterPath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/AssociationRule.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RuntimeLineChart.jpeg" afterPath="$PROJECT_DIR$/RuntimeLineChart.jpeg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/Main$1.class" afterPath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/Main$1.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/Main.class" afterPath="$PROJECT_DIR$/out/production/Apriori-Java-Implementation/com/company/Main.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Apriori-Java-Implementation.iml" afterPath="$PROJECT_DIR$/Apriori-Java-Implementation.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/result.txt" afterPath="$PROJECT_DIR$/result.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/company/Main.java" afterPath="$PROJECT_DIR$/src/com/company/Main.java" />
     </list>
@@ -24,23 +23,13 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="784">
-              <caret line="616" column="82" lean-forward="true" selection-start-line="616" selection-start-column="82" selection-end-line="616" selection-end-column="82" />
+            <state relative-caret-position="304">
+              <caret line="555" column="52" lean-forward="true" selection-start-line="555" selection-start-column="52" selection-end-line="555" selection-end-column="52" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
-                <element signature="e#16334#16342#0" expanded="true" />
+                <element signature="e#16178#16186#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DefaultCategoryDataset.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/jfreechart-1.0.19.jar!/org/jfree/data/category/DefaultCategoryDataset.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="430">
-              <caret line="60" column="16" lean-forward="false" selection-start-line="60" selection-start-column="16" selection-end-line="60" selection-end-column="16" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -633,12 +622,12 @@
       <workItem from="1518571631977" duration="10245000" />
       <workItem from="1518893166158" duration="18787000" />
       <workItem from="1518918338952" duration="3128000" />
-      <workItem from="1518979839027" duration="14624000" />
+      <workItem from="1518979839027" duration="15641000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="53370000" />
+    <option name="totallyTimeSpent" value="54387000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="-11" width="3036" height="1822" extended-state="6" />
@@ -697,7 +686,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#16334#16342#0" expanded="true" />
+            <element signature="e#16178#16186#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -719,7 +708,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#16334#16342#0" expanded="true" />
+            <element signature="e#16178#16186#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -741,7 +730,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#16334#16342#0" expanded="true" />
+            <element signature="e#16178#16186#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -753,7 +742,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#16334#16342#0" expanded="true" />
+            <element signature="e#16178#16186#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -765,7 +754,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#16334#16342#0" expanded="true" />
+            <element signature="e#16178#16186#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -845,12 +834,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="784">
-          <caret line="616" column="82" lean-forward="true" selection-start-line="616" selection-start-column="82" selection-end-line="616" selection-end-column="82" />
+        <state relative-caret-position="304">
+          <caret line="555" column="52" lean-forward="true" selection-start-line="555" selection-start-column="52" selection-end-line="555" selection-end-column="52" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#16334#16342#0" expanded="true" />
+            <element signature="e#16178#16186#0" expanded="true" />
           </folding>
         </state>
       </provider>

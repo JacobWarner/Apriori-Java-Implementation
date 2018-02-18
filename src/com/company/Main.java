@@ -12,12 +12,8 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.axis.StandardTickUnitSource;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.Range;
 import org.jfree.data.category.DefaultCategoryDataset;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -32,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Main {
 
     // Parameters set with default values that can be overwritten through command line arguments
-    private static double minSup = 0.55;
+    private static double minSup = 0.89;
     private static double minConf = 0.9;
     private static int numRulesToPrint = 10;
     private static String inputFilePath = "vote.arff";
@@ -488,15 +484,21 @@ public class Main {
      */
     private static void printAllRules(ArrayList<AssociationRule> rules) throws IOException {
         writer.newLine();
-        writer.append("Best rules found:");
-        writer.newLine();
 
-        int ruleNum = 1;
-        for (AssociationRule rule : rules) {
+        if (rules.size() == 0) {
+            writer.append("No rules found!");
             writer.newLine();
-            writer.append("\t").append(String.valueOf(ruleNum)).append(". ").append(ruleToString(rule));
-            ruleNum++;
-            if (ruleNum > numRulesToPrint) break;
+        } else {
+            writer.append("Best rules found:");
+            writer.newLine();
+
+            int ruleNum = 1;
+            for (AssociationRule rule : rules) {
+                writer.newLine();
+                writer.append("\t").append(String.valueOf(ruleNum)).append(". ").append(ruleToString(rule));
+                ruleNum++;
+                if (ruleNum > numRulesToPrint) break;
+            }
         }
     }
 
@@ -516,7 +518,7 @@ public class Main {
 
     /**
      * Tests the runtime of the Apriori Algorithm with support 0.1 through 1.0 (incrementing by 0.1)
-     * NOTE: Does not include runtime of rule generation, as it was not necessary.
+     * NOTE: Includes runtime of rule generation, as it adds a bit of time in the lower supports.
      *
      * @throws Exception - throws Exception if {@link BufferedWriter} or {@link DataSource} are not functional
      */
@@ -605,10 +607,9 @@ public class Main {
 
         CategoryPlot plot = lineChartObject.getCategoryPlot();
         NumberAxis range = (NumberAxis)plot.getRangeAxis();
-        range.setRange(new Range(0.0, 3.0));
-        range.setTickUnit(new NumberTickUnit(0.2));
+        range.setTickUnit(new NumberTickUnit(0.5));
+        range.setLowerBound(0.0);
 
-        BasicStroke result = null;
         lineChartObject.setBorderStroke(new BasicStroke(0.5f));
 
         int width = 960;    /* Width of the image */
@@ -631,7 +632,6 @@ public class Main {
                 lineChartData, PlotOrientation.VERTICAL,
                 false,false,false);
 
-        BasicStroke result = null;
         lineChartObject.setBorderStroke(new BasicStroke(0.5f));
 
         int width = 960;    /* Width of the image */
