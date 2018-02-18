@@ -1,0 +1,14 @@
+@relation SimpleDataSet
+
+@attribute T_id {300,400,500,600}
+@attribute Num1{0,1}
+@attribute Num2{0,1}
+@attribute Num3{0,1}
+@attribute Num4{0,1}
+@attribute Num5{0,1}
+
+@data
+300,1,1,1,0,0
+400,1,1,0,1,1
+500,1,0,1,1,0
+600,1,0,1,0,0
