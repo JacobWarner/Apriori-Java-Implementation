@@ -7,6 +7,7 @@
  */
 
 package com.company;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -28,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Main {
 
     // Parameters set with default values that can be overwritten through command line arguments
-    private static double minSup = 0.89;
+    private static double minSup = 0.55;
     private static double minConf = 0.9;
     private static int numRulesToPrint = 10;
     private static String inputFilePath = "vote.arff";
@@ -101,14 +102,7 @@ public class Main {
             ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets = AprioriAlgorithm();
             ArrayList<AssociationRule> rules = ruleGeneration(frequentItemSets);
 
-            rules.sort(new Comparator<AssociationRule>() {
-                @Override
-                public int compare(AssociationRule o1, AssociationRule o2) {
-                    double confDiff = o2.getConfidence() - o1.getConfidence();
-                    return ((confDiff > 0) ? 1 : (confDiff < 0) ? -1 : 0);
-                }
-            });
-
+            sortRules(rules);
             printAllRules(rules);
 
             if (testRunTime.equalsIgnoreCase("y")) {
@@ -360,6 +354,56 @@ public class Main {
         return new ArrayList<T>(set);
     }
 
+    /**
+     * Sorts a list of Association Rules first by confidence, then support, then frequencies
+     *
+     * @param rules - a list of {@link AssociationRule}s
+     * @return a sorted list of Association Rules
+     */
+    private static ArrayList<AssociationRule> sortRules(ArrayList<AssociationRule> rules) {
+        rules.sort(new Comparator<AssociationRule>() {
+            @Override
+            public int compare(AssociationRule o1, AssociationRule o2) {
+                double confDiff = o2.getConfidence() - o1.getConfidence();
+                if (confDiff > 0) {
+                    return 1;
+                } else if (confDiff < 0) {
+                    return -1;
+                } else {
+
+                    double supportDiff = o2.getSupport() - o1.getSupport();
+
+                    if (supportDiff > 0) {
+                        return 1;
+                    } else if (supportDiff < 0) {
+                        return -1;
+                    } else {
+
+                        int implicationCountDiff = o2.getImplicationCount() - o1.getImplicationCount();
+
+                        if (implicationCountDiff > 0) {
+                            return 1;
+                        } else if (implicationCountDiff < 0) {
+                            return -1;
+                        } else {
+
+                            int premiseCountDiff = o2.getPremiseCount() - o1.getPremiseCount();
+
+                            if (premiseCountDiff > 0) {
+                                return 1;
+                            } else if (premiseCountDiff < 0) {
+                                return -1;
+                            }
+
+                            return 0;
+                        }
+                    }
+                }
+            }
+        });
+
+        return rules;
+    }
 
     /**
      * Generates the rules given frequent itemsets
@@ -382,6 +426,8 @@ public class Main {
                     ArrayList<Integer> premise = new ArrayList<>(s);
 
                     int premiseCount = 0;
+
+                    // Extra check due to NullPointerExceptions
                     if (!frequentItemSets.containsKey(premise)) {
                         for (ArrayList<Integer> instance : encodedInstances) {
                             if (instance.containsAll(premise)) {
@@ -400,7 +446,7 @@ public class Main {
 
                     if (confidence >= minConf) {
                         ArrayList<Integer> implication = new ArrayList<>(implied);
-                        AssociationRule newRule = new AssociationRule(premise, premiseCount, implication, impliedCount, confidence);
+                        AssociationRule newRule = new AssociationRule(premise, premiseCount, implication, impliedCount, confidence, itemSupport);
                         if (!rules.contains(newRule)) {
                             rules.add(newRule);
                         }
@@ -471,6 +517,9 @@ public class Main {
         sb.append("    <conf:(");
         sb.append(rule.getRoundedConfidence());
         sb.append(")>");
+        sb.append("    <sup:(");
+        sb.append(rule.getRoundedSupport());
+        sb.append(")>");
 
         return sb.toString();
     }
@@ -518,13 +567,13 @@ public class Main {
 
     /**
      * Tests the runtime of the Apriori Algorithm with support 0.1 through 1.0 (incrementing by 0.1)
-     * NOTE: Includes runtime of rule generation, as it adds a bit of time in the lower supports.
+     * NOTE: Includes runtime of rule generation, as it adds a bit of time in the lower supports. However, the line chart does not include it.
      *
      * @throws Exception - throws Exception if {@link BufferedWriter} or {@link DataSource} are not functional
      */
     private static void testRuntimeOfProgram() throws Exception {
         HashMap<Double, Double> algorithmRunTime = new HashMap<>();
-        HashMap<Double, Integer> numRulesGeneratedPerSupport = new HashMap<>();
+        HashMap<Double, Double> ruleGenerationRunTime = new HashMap<>();
 
         double maxSupport = 1.0;
         double minSupport = 0.1;
@@ -534,13 +583,21 @@ public class Main {
 
         while (minSupport <= maxSupport) {
             minSup = minSupport;
+
+            // Tracking runtime of the Apriori algorithm
             startTime = System.nanoTime();
             ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets = AprioriAlgorithmWithoutPrint();
-            ArrayList<AssociationRule> rules = ruleGeneration(frequentItemSets);
-            numRulesGeneratedPerSupport.put(minSupport, rules.size());
             endTime = System.nanoTime();
             timeInSeconds = ((double) (endTime-startTime)) / 1E9;
             algorithmRunTime.put(minSup, timeInSeconds);
+
+            // Tracking runtime of rule generation
+            startTime = System.nanoTime();
+            ArrayList<AssociationRule> rules = ruleGeneration(frequentItemSets);
+            endTime = System.nanoTime();
+            timeInSeconds = ((double) (endTime-startTime)) / 1E9;
+            ruleGenerationRunTime.put(minSupport, timeInSeconds);
+
             minSupport += 0.1;
         }
 
@@ -561,11 +618,13 @@ public class Main {
             temp = String.format("\t Apriori Algorithm: %.6f seconds\n", algorithmRunTime.get(sup));
             writer.append(temp);
             writer.newLine();
+            temp = String.format("\t Rule Generation: %.6f seconds\n", ruleGenerationRunTime.get(sup));
+            writer.append(temp);
+            writer.newLine();
             sup = sup + 0.1;
         }
 
-        createRuntimeChart(algorithmRunTime);
-        createRulesPerSupportChart(numRulesGeneratedPerSupport);
+        createRuntimeChart(algorithmRunTime, ruleGenerationRunTime);
     }
 
 
@@ -591,18 +650,30 @@ public class Main {
         return frequentItemSets;
     }
 
-    private static void createRuntimeChart(HashMap<Double, Double> algorithmRunTime) throws IOException {
-        DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+    /**
+     * Creates a runtime analysis chart with the support on the x-axis and runtime (in seconds) on the y-axis
+     * NOTE: Run-time also includes Rule Generation time. If you want just the Apriori Algorithm, feel free to change the commented lines within the method.
+     *
+     * @param algorithmRunTime - (key,value) pairs of support with their respective run-times
+     * @throws IOException - throws an IOException if {@link BufferedWriter} isn't functional
+     */
+    private static void createRuntimeChart(HashMap<Double, Double> algorithmRunTime, HashMap<Double, Double> ruleGenerationRunTime) throws IOException {
+        DefaultCategoryDataset lineChartData = new DefaultCategoryDataset();
 
         for (double sup = 0.1; sup <= 1.0;) {
-            line_chart_dataset.addValue(algorithmRunTime.get(sup), "Time", String.format("%.2f", sup));
+
+            // Rule Generation and Apriori Algorithm run-times
+            lineChartData.addValue((algorithmRunTime.get(sup) + ruleGenerationRunTime.get(sup)), "Time", String.format("%.2f", sup));
+
+            // Aprioro Algorithm run-times only
+            // lineChartData.addValue(algorithmRunTime.get(sup), "Time", String.format("%.2f", sup));
             sup = sup + 0.1;
         }
 
         JFreeChart lineChartObject = ChartFactory.createLineChart(
                 "Apriori Algorithm Analysis","Support",
                 "Runtime (seconds)",
-                line_chart_dataset, PlotOrientation.VERTICAL,
+                lineChartData, PlotOrientation.VERTICAL,
                 false,false,false);
 
         CategoryPlot plot = lineChartObject.getCategoryPlot();
@@ -615,28 +686,6 @@ public class Main {
         int width = 960;    /* Width of the image */
         int height = 720;   /* Height of the image */
         File lineChart = new File( "RuntimeLineChart.jpeg" );
-        ChartUtilities.saveChartAsJPEG(lineChart ,lineChartObject, width ,height);
-    }
-
-    private static void createRulesPerSupportChart(HashMap<Double, Integer> numRulesGeneratedPerSupport) throws IOException {
-        DefaultCategoryDataset lineChartData = new DefaultCategoryDataset();
-
-        for (double sup = 0.1; sup <= 1.0;) {
-            lineChartData.addValue(numRulesGeneratedPerSupport.get(sup), "Rules", String.format("%.2f", sup));
-            sup = sup + 0.1;
-        }
-
-        JFreeChart lineChartObject = ChartFactory.createLineChart(
-                "Apriori Algorithm Analysis","Support",
-                "Rules Generated",
-                lineChartData, PlotOrientation.VERTICAL,
-                false,false,false);
-
-        lineChartObject.setBorderStroke(new BasicStroke(0.5f));
-
-        int width = 960;    /* Width of the image */
-        int height = 720;   /* Height of the image */
-        File lineChart = new File( "RulesPerSupportLineChart.jpeg" );
         ChartUtilities.saveChartAsJPEG(lineChart ,lineChartObject, width ,height);
     }
 }

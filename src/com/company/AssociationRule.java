@@ -13,56 +13,43 @@ public class AssociationRule {
     private ArrayList<Integer> implication;
     private int implicationCount;
     private double confidence;
+    private double support;
 
     /**
      * An Association Rule generated as part of the Apriori Algorithm
      *
-     * @param premise - the itemset on the left of the rule (premise)
-     * @param premiseCount - the premise itemset's frequency within the given data
-     * @param implication - the itemset on the right of the rule (implied)
+     * @param premise          - the itemset on the left of the rule (premise)
+     * @param premiseCount     - the premise itemset's frequency within the given data
+     * @param implication      - the itemset on the right of the rule (implied)
      * @param implicationCount - the implied itemset's frequency within the given data
-     * @param confidence - the confidence of the rule
+     * @param confidence       - the confidence of the rule
+     * @param support          - the support of the rule
      */
     public AssociationRule(ArrayList<Integer> premise, int premiseCount,
                            ArrayList<Integer> implication, int implicationCount,
-                           double confidence) {
+                           double confidence, double support) {
         this.premise = premise;
         this.premiseCount = premiseCount;
         this.implication = implication;
         this.implicationCount = implicationCount;
         this.confidence = confidence;
+        this.support = support;
     }
 
     public ArrayList<Integer> getPremise() {
         return premise;
     }
 
-    public void setPremise(ArrayList<Integer> premise) {
-        this.premise = premise;
-    }
-
     public int getPremiseCount() {
         return premiseCount;
-    }
-
-    public void setPremiseCount(int premiseCount) {
-        this.premiseCount = premiseCount;
     }
 
     public ArrayList<Integer> getImplication() {
         return implication;
     }
 
-    public void setImplication(ArrayList<Integer> implication) {
-        this.implication = implication;
-    }
-
     public int getImplicationCount() {
         return implicationCount;
-    }
-
-    public void setImplicationCount(int implicationCount) {
-        this.implicationCount = implicationCount;
     }
 
     public double getConfidence() {
@@ -73,8 +60,8 @@ public class AssociationRule {
         return round(confidence, 2);
     }
 
-    public void setConfidence(double confidence) {
-        this.confidence = confidence;
+    public double getRoundedSupport() {
+        return round(support, 2);
     }
 
     public static double round(double value, int places) {
@@ -83,5 +70,9 @@ public class AssociationRule {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    public double getSupport() {
+        return support;
     }
 }
