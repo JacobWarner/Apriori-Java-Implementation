@@ -378,7 +378,7 @@ public class Main {
             }
         });
 
-        // Then sort by confidence, support, and frequencies
+        // Then sort by confidence and frequencies
         rules.sort(new Comparator<AssociationRule>() {
             @Override
             public int compare(AssociationRule o1, AssociationRule o2) {
@@ -388,33 +388,23 @@ public class Main {
                 } else if (confDiff < 0) {
                     return -1;
                 } else {
+                    int implicationCountDiff = o2.getImplicationCount() - o1.getImplicationCount();
 
-                    double supportDiff = o2.getSupport() - o1.getSupport();
-
-                    if (supportDiff > 0) {
+                    if (implicationCountDiff > 0) {
                         return 1;
-                    } else if (supportDiff < 0) {
+                    } else if (implicationCountDiff < 0) {
                         return -1;
                     } else {
 
-                        int implicationCountDiff = o2.getImplicationCount() - o1.getImplicationCount();
+                        int premiseCountDiff = o2.getPremiseCount() - o1.getPremiseCount();
 
-                        if (implicationCountDiff > 0) {
+                        if (premiseCountDiff > 0) {
                             return 1;
-                        } else if (implicationCountDiff < 0) {
+                        } else if (premiseCountDiff < 0) {
                             return -1;
-                        } else {
-
-                            int premiseCountDiff = o2.getPremiseCount() - o1.getPremiseCount();
-
-                            if (premiseCountDiff > 0) {
-                                return 1;
-                            } else if (premiseCountDiff < 0) {
-                                return -1;
-                            }
-
-                            return 0;
                         }
+
+                        return 0;
                     }
                 }
             }
@@ -435,7 +425,7 @@ public class Main {
             Set<Integer> set = new HashSet<>(item);
 
             for (Set<Integer> s : powerSet(set)) {
-                if (s.isEmpty() || s.size() == 0 || s == null) continue;
+                if (s.isEmpty() || s.size() == 0) continue;
                 Set<Integer> implied = new HashSet<>(item);
                 implied.removeAll(s);
 
@@ -443,7 +433,14 @@ public class Main {
 
                     ArrayList<Integer> premise = new ArrayList<>(s);
 
+                    int impliedCount = frequentItemSets.get(item);
+                    double itemSupport = ((double)impliedCount / (double)numInstances);
+
+                    // If the rule doesn't reach the minimum support, don't create it
+                    if (itemSupport < minSup) continue;
+
                     int premiseCount = 0;
+                    double subsetSupport;
 
                     // Extra check due to NullPointerExceptions
                     if (!frequentItemSets.containsKey(premise)) {
@@ -455,31 +452,7 @@ public class Main {
                     }
 
                     premiseCount = frequentItemSets.get(premise);
-                    int impliedCount = frequentItemSets.get(item);
-
-                    double itemSupport = ((double)impliedCount / (double)numInstances);
-                    double subsetSupport = ((double)premiseCount / (double)numInstances);
-
-                    // Recalculate support if needed :(
-                    if (itemSupport < minSup) {
-                        double frequency = 0.0;
-                        double frequencyP = 0.0;
-                        for (ArrayList<Integer> instance : encodedInstances) {
-                            if (instance.containsAll(item)) {
-                                frequency++;
-                            }
-                            if (instance.containsAll(premise)) {
-                                frequencyP++;
-                            }
-                        }
-
-                        premiseCount = (int)frequencyP;
-                        impliedCount = (int)frequency;
-
-                        itemSupport = frequency/ (double)numInstances;
-                        subsetSupport = frequencyP / (double)numInstances;
-                    }
-                    if (itemSupport < minSup) continue;
+                    subsetSupport = ((double)premiseCount / (double)numInstances);
 
                     double confidence = (itemSupport / subsetSupport);
 
