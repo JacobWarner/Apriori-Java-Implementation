@@ -34,7 +34,7 @@ public class Main {
     private static int numRulesToPrint = 10;
     private static String inputFilePath = "vote.arff";
     private static String outputFilePath = "result.txt";
-    private static String testRunTime = "y";
+    private static String testRunTime = "n";
 
     // Data gathered from input file
     private static int numAttributes;
@@ -71,16 +71,17 @@ public class Main {
                     }
                     break;
                 case 3:
-                    outputFilePath = args[3];
-                    break;
-                case 4:
-                    numRulesToPrint = Integer.parseInt(args[4]);
+                    numRulesToPrint = Integer.parseInt(args[3]);
                     if (numRulesToPrint < 0) {
                         System.out.println("Invalid number of rules to print. Using default of 10");
                     }
+                    break;
+                case 4:
+                    outputFilePath = args[4];
+                    break;
                 case 5:
                     testRunTime = args[5];
-                    if (!testRunTime.equalsIgnoreCase("y") || !testRunTime.equalsIgnoreCase("n")) {
+                    if (!testRunTime.equalsIgnoreCase("y") && !testRunTime.equalsIgnoreCase("n")) {
                         System.out.println("Invalid input for runtime testing. Using default answer (n).");
                     }
                     break;
@@ -107,7 +108,8 @@ public class Main {
 
             if (testRunTime.equalsIgnoreCase("y")) {
                 writer.newLine();
-                writer.append("End of program. Now testing runtime with different supports, 0.1 to 1.0");
+                writer.newLine();
+                writer.append("End of main program. Now testing runtime with different supports, 0.1 to 1.0");
                 writer.newLine();
                 testRuntimeOfProgram();
             }
@@ -567,7 +569,7 @@ public class Main {
 
     /**
      * Tests the runtime of the Apriori Algorithm with support 0.1 through 1.0 (incrementing by 0.1)
-     * NOTE: Includes runtime of rule generation, as it adds a bit of time in the lower supports. However, the line chart does not include it.
+     * NOTE: Includes runtime of rule generation, as it adds a bit of time in the lower supports.
      *
      * @throws Exception - throws Exception if {@link BufferedWriter} or {@link DataSource} are not functional
      */
