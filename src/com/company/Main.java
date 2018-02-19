@@ -183,6 +183,10 @@ public class Main {
         writer.newLine();
         writer.append("Input file: ").append(inputFilePath);
         writer.newLine();
+        writer.append("Number of Instances: ").append(String.valueOf(numInstances));
+        writer.newLine();
+        writer.append("Number of Attributes: ").append(String.valueOf(numAttributes));
+        writer.newLine();
         writer.append("Minimum support: ").append(String.valueOf(minSup)).append(" (").append(String.valueOf(numSupportedInstances)).append(" instances)");
         writer.newLine();
         writer.append("Minimum metric <confidence>: ").append(String.valueOf(minConf));
@@ -363,6 +367,18 @@ public class Main {
      * @return a sorted list of Association Rules
      */
     private static ArrayList<AssociationRule> sortRules(ArrayList<AssociationRule> rules) {
+
+        // Sort first by support (follows Weka)
+        rules.sort(new Comparator<AssociationRule>() {
+            @Override
+            public int compare(AssociationRule o1, AssociationRule o2) {
+                double supportDiff = o2.getSupport() - o1.getSupport();
+
+                return (supportDiff > 0 ? 1 : supportDiff < 0 ? -1 : 0);
+            }
+        });
+
+        // Then sort by confidence, support, and frequencies
         rules.sort(new Comparator<AssociationRule>() {
             @Override
             public int compare(AssociationRule o1, AssociationRule o2) {
@@ -441,8 +457,29 @@ public class Main {
                     premiseCount = frequentItemSets.get(premise);
                     int impliedCount = frequentItemSets.get(item);
 
-                    double itemSupport = ((double)impliedCount / numInstances);
-                    double subsetSupport = ((double)premiseCount / numInstances);
+                    double itemSupport = ((double)impliedCount / (double)numInstances);
+                    double subsetSupport = ((double)premiseCount / (double)numInstances);
+
+                    // Recalculate support if needed :(
+                    if (itemSupport < minSup) {
+                        double frequency = 0.0;
+                        double frequencyP = 0.0;
+                        for (ArrayList<Integer> instance : encodedInstances) {
+                            if (instance.containsAll(item)) {
+                                frequency++;
+                            }
+                            if (instance.containsAll(premise)) {
+                                frequencyP++;
+                            }
+                        }
+
+                        premiseCount = (int)frequencyP;
+                        impliedCount = (int)frequency;
+
+                        itemSupport = frequency/ (double)numInstances;
+                        subsetSupport = frequencyP / (double)numInstances;
+                    }
+                    if (itemSupport < minSup) continue;
 
                     double confidence = (itemSupport / subsetSupport);
 
@@ -540,6 +577,8 @@ public class Main {
             writer.append("No rules found!");
             writer.newLine();
         } else {
+            writer.append("There were ").append(String.valueOf(rules.size())).append(" rules found.");
+            writer.newLine();
             writer.append("Best rules found:");
             writer.newLine();
 
