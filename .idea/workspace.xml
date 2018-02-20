@@ -7,7 +7,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e1025daf-f7bb-43c1-9605-9740688707d8" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Apriori_Java_Implementation_jar.zip" afterPath="$PROJECT_DIR$/Apriori_Java_Implementation_jar.zip" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/company/Main.java" afterPath="$PROJECT_DIR$/src/com/company/Main.java" />
     </list>
@@ -25,12 +24,12 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="215" column="7" lean-forward="true" selection-start-line="215" selection-start-column="7" selection-end-line="215" selection-end-column="7" />
+            <state relative-caret-position="740">
+              <caret line="645" column="41" lean-forward="true" selection-start-line="645" selection-start-column="41" selection-end-line="645" selection-end-column="41" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
-                <element signature="e#18283#18291#0" expanded="true" />
+                <element signature="e#26426#26434#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -96,8 +95,8 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-11" />
     <option name="y" value="-11" />
-    <option name="width" value="3036" />
-    <option name="height" value="1822" />
+    <option name="width" value="2716" />
+    <option name="height" value="1642" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -600,15 +599,16 @@
       <workItem from="1519011592095" duration="6718000" />
       <workItem from="1519069946988" duration="1761000" />
       <workItem from="1519073290031" duration="2490000" />
-      <workItem from="1519076737044" duration="3345000" />
+      <workItem from="1519076737044" duration="4701000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="69675000" />
+    <option name="totallyTimeSpent" value="71031000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-11" y="-11" width="3036" height="1822" extended-state="6" />
+    <frame x="-11" y="-11" width="2716" height="1642" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -625,7 +625,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1307233" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14625093" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -663,7 +663,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#18283#18291#0" expanded="true" />
+            <element signature="e#26426#26434#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -685,7 +685,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#18283#18291#0" expanded="true" />
+            <element signature="e#26426#26434#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -707,7 +707,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#18283#18291#0" expanded="true" />
+            <element signature="e#26426#26434#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -729,7 +729,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#18283#18291#0" expanded="true" />
+            <element signature="e#26426#26434#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -751,7 +751,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#18283#18291#0" expanded="true" />
+            <element signature="e#26426#26434#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -773,7 +773,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#18283#18291#0" expanded="true" />
+            <element signature="e#26426#26434#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -795,7 +795,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#18283#18291#0" expanded="true" />
+            <element signature="e#26426#26434#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -807,7 +807,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#18283#18291#0" expanded="true" />
+            <element signature="e#26426#26434#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -819,7 +819,7 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#18283#18291#0" expanded="true" />
+            <element signature="e#26426#26434#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -890,12 +890,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="215" column="7" lean-forward="true" selection-start-line="215" selection-start-column="7" selection-end-line="215" selection-end-column="7" />
+        <state relative-caret-position="740">
+          <caret line="645" column="41" lean-forward="true" selection-start-line="645" selection-start-column="41" selection-end-line="645" selection-end-column="41" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#18283#18291#0" expanded="true" />
+            <element signature="e#26426#26434#0" expanded="true" />
           </folding>
         </state>
       </provider>

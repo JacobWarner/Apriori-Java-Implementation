@@ -342,24 +342,6 @@ public class Main {
        return canTheyCombine;
     }
 
-
-    /**
-     * Creates a union between two {@link ArrayList}
-     *
-     * @param list1 - an array list
-     * @param list2 - another array list
-     * @param <T> - type for array list
-     * @return - the array list create by the union of list1 and list2
-     */
-    private static <T> ArrayList<T> union(ArrayList<T> list1, ArrayList<T> list2) {
-        Set<T> set = new HashSet<T>();
-
-        set.addAll(list1);
-        set.addAll(list2);
-
-        return new ArrayList<T>(set);
-    }
-
     /**
      * Sorts a list of Association Rules first by confidence, then support, then frequencies
      *
@@ -422,6 +404,13 @@ public class Main {
     private static ArrayList<AssociationRule> ruleGeneration(ConcurrentHashMap<ArrayList<Integer>, Integer> frequentItemSets) {
         ArrayList<AssociationRule> rules = new ArrayList<>();
         for (ArrayList<Integer> item : frequentItemSets.keySet()) {
+
+            int impliedCount = frequentItemSets.get(item);
+            double itemSupport = ((double)impliedCount / (double)numInstances);
+
+            // If the rule doesn't reach the minimum support, don't create it
+            if (itemSupport < minSup) continue;
+
             Set<Integer> set = new HashSet<>(item);
 
             for (Set<Integer> s : powerSet(set)) {
@@ -432,12 +421,6 @@ public class Main {
                 if (implied.size() > 0) {
 
                     ArrayList<Integer> premise = new ArrayList<>(s);
-
-                    int impliedCount = frequentItemSets.get(item);
-                    double itemSupport = ((double)impliedCount / (double)numInstances);
-
-                    // If the rule doesn't reach the minimum support, don't create it
-                    if (itemSupport < minSup) continue;
 
                     int premiseCount = 0;
                     double subsetSupport;
@@ -469,37 +452,6 @@ public class Main {
 
         return rules;
     }
-
-
-    /**
-     * Generates the powerset of a set.
-     * NOTE: It generates an empty set, but we check against that in the method, ruleGeneration
-     *
-     * @param originalSet - the original set
-     * @param <T> - the set's type
-     * @return - a set of sets (the powerset of the original set)
-     */
-    private static <T> Set<Set<T>> powerSet(Set<T> originalSet) {
-        Set<Set<T>> sets = new HashSet<Set<T>>();
-        if (originalSet.isEmpty()) {
-            sets.add(new HashSet<T>());
-            return sets;
-        }
-
-        List<T> list = new ArrayList<T>(originalSet);
-        T head = list.get(0);
-        Set<T> rest = new HashSet<T>(list.subList(1, list.size()));
-        for (Set<T> set : powerSet(rest)) {
-            Set<T> newSet = new HashSet<T>();
-            newSet.add(head);
-            newSet.addAll(set);
-            sets.add(newSet);
-            sets.add(set);
-        }
-
-        return sets;
-    }
-
 
     /**
      * Used to format the rules as Weka does
@@ -607,7 +559,7 @@ public class Main {
 
             // Tracking runtime of rule generation
             startTime = System.nanoTime();
-            ArrayList<AssociationRule> rules = ruleGeneration(frequentItemSets);
+            ruleGeneration(frequentItemSets);
             endTime = System.nanoTime();
             timeInSeconds = ((double) (endTime-startTime)) / 1E9;
             ruleGenerationRunTime.put(minSupport, timeInSeconds);
@@ -679,8 +631,9 @@ public class Main {
             // Rule Generation and Apriori Algorithm run-times
             lineChartData.addValue((algorithmRunTime.get(sup) + ruleGenerationRunTime.get(sup)), "Time", String.format("%.2f", sup));
 
-            // Aprioro Algorithm run-times only
+            // Apriori Algorithm run-times only
             // lineChartData.addValue(algorithmRunTime.get(sup), "Time", String.format("%.2f", sup));
+
             sup = sup + 0.1;
         }
 
@@ -701,5 +654,58 @@ public class Main {
         int height = 720;   /* Height of the image */
         File lineChart = new File( "RuntimeLineChart.jpeg" );
         ChartUtilities.saveChartAsJPEG(lineChart ,lineChartObject, width ,height);
+    }
+
+
+
+
+    // =================================================
+    // STACKOVERFLOW METHODS
+    // =================================================
+
+    /**
+     * Creates a union between two {@link ArrayList}
+     *
+     * @param list1 - an array list
+     * @param list2 - another array list
+     * @param <T> - type for array list
+     * @return - the array list create by the union of list1 and list2
+     */
+    private static <T> ArrayList<T> union(ArrayList<T> list1, ArrayList<T> list2) {
+        Set<T> set = new HashSet<T>();
+
+        set.addAll(list1);
+        set.addAll(list2);
+
+        return new ArrayList<T>(set);
+    }
+
+    /**
+     * Generates the powerset of a set.
+     * NOTE: It generates an empty set, but we check against that in the method, ruleGeneration
+     *
+     * @param originalSet - the original set
+     * @param <T> - the set's type
+     * @return - a set of sets (the powerset of the original set)
+     */
+    private static <T> Set<Set<T>> powerSet(Set<T> originalSet) {
+        Set<Set<T>> sets = new HashSet<Set<T>>();
+        if (originalSet.isEmpty()) {
+            sets.add(new HashSet<T>());
+            return sets;
+        }
+
+        List<T> list = new ArrayList<T>(originalSet);
+        T head = list.get(0);
+        Set<T> rest = new HashSet<T>(list.subList(1, list.size()));
+        for (Set<T> set : powerSet(rest)) {
+            Set<T> newSet = new HashSet<T>();
+            newSet.add(head);
+            newSet.addAll(set);
+            sets.add(newSet);
+            sets.add(set);
+        }
+
+        return sets;
     }
 }
