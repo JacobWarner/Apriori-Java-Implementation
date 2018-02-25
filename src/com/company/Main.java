@@ -203,7 +203,7 @@ public class Main {
         ArrayList<ArrayList<Integer>> currentCandidateItemSets = new ArrayList<>();
 
         while (currentFrequentItemSets.size() > 0) {
-            printFrequentItemSets(currentFrequentItemSets.size(), (k-1));
+            printFrequentItemSets(currentFrequentItemSets, (k-1));
             currentCandidateItemSets = createCandidates(currentFrequentItemSets, k);
             currentFrequentItemSets = createItemSetsWithSupport(currentCandidateItemSets, frequentItemSets);
             k++;
@@ -521,13 +521,19 @@ public class Main {
     /**
      * Prints frequent itemsets as Weka does
      *
-     * @param frequentItemNum - number of frequent itemsets of k-size
+     * @param currentFrequentItemSets - the frequent itemsets of k-size
      * @param k - the size of the frequent itemsets
      * @throws IOException - throws an IOException if {@link BufferedWriter} isn't functional
      */
-    private static void printFrequentItemSets(int frequentItemNum, int k) throws IOException {
+    private static void printFrequentItemSets(ArrayList<ArrayList<Integer>> currentFrequentItemSets, int k) throws IOException {
+        int frequentItemNum = currentFrequentItemSets.size();
         writer.newLine();
         writer.append("Size of set of large itemsets L(").append(String.valueOf(k)).append("): ").append(String.valueOf(frequentItemNum));
+        writer.newLine();
+        for (int i = 0; i < frequentItemNum; i++) {
+            writer.append(currentFrequentItemSets.get(i).toString());
+            writer.newLine();
+        }
     }
 
 
